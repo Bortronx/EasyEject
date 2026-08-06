@@ -1,0 +1,28 @@
+# Build output
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build artifacts
+publish/
+publish_test/
+
+# MSIX packaging intermediate files
+src/EasyEject.Package/bin/
+src/EasyEject.Package/obj/
+
+# Test results
+[Tt]est[Rr]esult*/
+*.trx
+
+# User-specific files
+*.rsuser
+
+# Logs
+*.log

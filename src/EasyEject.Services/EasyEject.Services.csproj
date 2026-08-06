@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0-windows10.0.19041.0</TargetFramework>
+    <RootNamespace>EasyEject.Services</RootNamespace>
+    <AssemblyName>EasyEject.Services</AssemblyName>
+    <Platforms>x64;ARM64</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EasyEject.Core\EasyEject.Core.csproj" />
+    <ProjectReference Include="..\EasyEject.Models\EasyEject.Models.csproj" />
+    <ProjectReference Include="..\EasyEject.Win32\EasyEject.Win32.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.18" />
+  </ItemGroup>
+
+</Project>

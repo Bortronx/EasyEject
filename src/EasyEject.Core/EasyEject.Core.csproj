@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <RootNamespace>EasyEject.Core</RootNamespace>
+    <AssemblyName>EasyEject.Core</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EasyEject.Models\EasyEject.Models.csproj" />
+  </ItemGroup>
+
+</Project>
