@@ -10,6 +10,7 @@ namespace EasyEject.Win32;
 /// </summary>
 internal static class WmiDiskInfo
 {
+    private static readonly TimeSpan QueryTimeout = TimeSpan.FromSeconds(5);
     private static readonly Regex LogicalDiskRef = new(@"Win32_LogicalDisk\.DeviceID=""([^""]+)""", RegexOptions.Compiled);
     private static readonly Regex PartitionRef = new(@"Win32_DiskPartition\.DeviceID=""([^""]+)""", RegexOptions.Compiled);
 
@@ -23,7 +24,7 @@ internal static class WmiDiskInfo
 
         try
         {
-            using var searcher = new ManagementObjectSearcher("SELECT PNPDeviceID, Index, Size FROM Win32_DiskDrive");
+            using var searcher = CreateSearcher("SELECT PNPDeviceID, Index, Size FROM Win32_DiskDrive");
             foreach (ManagementObject disk in searcher.Get().Cast<ManagementObject>())
             {
                 string? pnpId = disk["PNPDeviceID"] as string;
@@ -58,7 +59,7 @@ internal static class WmiDiskInfo
 
         try
         {
-            using (var partitions = new ManagementObjectSearcher("SELECT DeviceID, DiskIndex FROM Win32_DiskPartition"))
+            using (var partitions = CreateSearcher("SELECT DeviceID, DiskIndex FROM Win32_DiskPartition"))
             {
                 foreach (ManagementObject partition in partitions.Get().Cast<ManagementObject>())
                 {
@@ -70,7 +71,7 @@ internal static class WmiDiskInfo
                 }
             }
 
-            using (var associations = new ManagementObjectSearcher("SELECT Antecedent, Dependent FROM Win32_LogicalDiskToPartition"))
+            using (var associations = CreateSearcher("SELECT Antecedent, Dependent FROM Win32_LogicalDiskToPartition"))
             {
                 foreach (ManagementObject row in associations.Get().Cast<ManagementObject>())
                 {
@@ -109,6 +110,19 @@ internal static class WmiDiskInfo
         }
 
         return result;
+    }
+
+    private static ManagementObjectSearcher CreateSearcher(string query)
+    {
+        return new ManagementObjectSearcher(
+            new ManagementScope(@"\\.\root\cimv2"),
+            new ObjectQuery(query),
+            new System.Management.EnumerationOptions
+            {
+                ReturnImmediately = true,
+                Rewindable = false,
+                Timeout = QueryTimeout,
+            });
     }
 
     private static string? ExtractKey(string? refString, Regex regex)

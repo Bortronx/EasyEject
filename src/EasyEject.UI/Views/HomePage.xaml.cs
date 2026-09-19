@@ -63,7 +63,7 @@ public sealed partial class HomePage : UserControl
             return;
         }
 
-        await ViewModel.RefreshAsync();
+        await ViewModel.RefreshQuietlyAsync();
     }
 
     private void DeviceList_SelectionChanged(object sender, SelectionChangedEventArgs e)

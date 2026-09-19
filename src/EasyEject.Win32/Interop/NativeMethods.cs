@@ -62,6 +62,15 @@ internal static partial class NativeMethods
         StringBuilder lpszVolumeName,
         uint cchBufferLength);
 
+    /// <summary>Retrieves all mounted paths for the specified volume GUID path.</summary>
+    [DllImport(Kernel32, SetLastError = true, CharSet = CharSet.Unicode)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool GetVolumePathNamesForVolumeNameW(
+        string lpszVolumeName,
+        char[]? lpszVolumePathNames,
+        uint cchBufferLength,
+        out uint lpcchReturnLength);
+
     /// <summary>Begins enumerating the volumes on the local machine.</summary>
     [DllImport(Kernel32, SetLastError = true, CharSet = CharSet.Unicode)]
     public static extern IntPtr FindFirstVolumeW(StringBuilder lpszVolumeName, uint cchBufferLength);

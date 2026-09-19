@@ -21,6 +21,7 @@ public sealed partial class HomeViewModel : ObservableObject
     private readonly IThemeService _themeService;
     private readonly IAppSettingsService _settingsService;
     private readonly ILogger<HomeViewModel> _logger;
+    private bool _showBusyIndicator;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="HomeViewModel"/> class.
@@ -71,6 +72,11 @@ public sealed partial class HomeViewModel : ObservableObject
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(EjectSelectedCommand))]
     public partial bool IsBusy { get; set; }
+
+    /// <summary>
+    /// Gets a value indicating whether the status bar should show active scan UI.
+    /// </summary>
+    public bool ShowBusyIndicator => IsBusy && _showBusyIndicator;
 
     /// <summary>
     /// Gets or sets the status bar text.
@@ -142,17 +148,20 @@ public sealed partial class HomeViewModel : ObservableObject
     [RelayCommand]
     internal async Task RefreshAsync()
     {
-        if (IsBusy)
-        {
-            return;
-        }
-
-        StatusText = "Scanning devices...";
-        await ScanDevicesAsync();
-        StatusText = StatusForCount(Devices.Count);
+        await RefreshCoreAsync();
     }
 
-    private async Task RefreshCoreAsync(bool quiet = false)
+    internal Task RefreshQuietlyAsync()
+    {
+        return RefreshCoreAsync(quiet: true, showBusyIndicator: false);
+    }
+
+    partial void OnIsBusyChanged(bool value)
+    {
+        OnPropertyChanged(nameof(ShowBusyIndicator));
+    }
+
+    private async Task RefreshCoreAsync(bool quiet = false, bool showBusyIndicator = true)
     {
         if (IsBusy)
         {
@@ -164,7 +173,7 @@ public sealed partial class HomeViewModel : ObservableObject
             StatusText = "Scanning devices...";
         }
 
-        await ScanDevicesAsync();
+        await ScanDevicesAsync(showBusyIndicator);
 
         if (!quiet)
         {
@@ -172,8 +181,10 @@ public sealed partial class HomeViewModel : ObservableObject
         }
     }
 
-    private async Task ScanDevicesAsync()
+    private async Task ScanDevicesAsync(bool showBusyIndicator = true)
     {
+        _showBusyIndicator = showBusyIndicator;
+        OnPropertyChanged(nameof(ShowBusyIndicator));
         IsBusy = true;
         try
         {
@@ -191,6 +202,8 @@ public sealed partial class HomeViewModel : ObservableObject
         finally
         {
             IsBusy = false;
+            _showBusyIndicator = false;
+            OnPropertyChanged(nameof(ShowBusyIndicator));
             DeviceCount = Devices.Count;
         }
     }

@@ -81,13 +81,11 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Spacing="8">
-                        <Button
-                            Style="{StaticResource PrimaryActionButtonStyle}"
-                            Content="Eject All External Devices"
-                            Command="{x:Bind ViewModel.EjectAllCommand}"
-                            AutomationProperties.Name="Eject all external devices" />
                         <TextBlock
-                            Text="Safely eject every removable storage device connected to this computer."
+                            Text="Choose the USB device you want to eject."
+                            Style="{StaticResource BodyStrongTextStyle}" />
+                        <TextBlock
+                            Text="Each device now shows its drive letter so matching duplicate names is easier."
                             Style="{StaticResource CaptionTextStyle}" />
                     </StackPanel>
 
@@ -169,6 +167,18 @@
                                         Style="{StaticResource CaptionTextStyle}"
                                         Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                         TextTrimming="CharacterEllipsis" />
+                                    <Border
+                                        HorizontalAlignment="Left"
+                                        Margin="0,2,0,0"
+                                        Padding="8,2"
+                                        Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                                        CornerRadius="10">
+                                        <TextBlock
+                                            Text="{x:Bind DriveLetterBadgeText, Mode=OneWay}"
+                                            Style="{StaticResource CaptionTextStyle}"
+                                            FontWeight="SemiBold"
+                                            AutomationProperties.Name="Drive letter" />
+                                    </Border>
                                     <TextBlock
                                         Text="{x:Bind DetailText, Mode=OneWay}"
                                         Style="{StaticResource CaptionTextStyle}"
@@ -179,6 +189,11 @@
                                 <StackPanel Grid.Column="2" Spacing="4" VerticalAlignment="Center">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="14">
                                         <StackPanel>
+                                            <TextBlock
+                                                Text="Drive letter"
+                                                Style="{StaticResource CaptionTextStyle}"
+                                                HorizontalAlignment="Right"
+                                                Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
                                             <TextBlock
                                                 Text="{x:Bind VolumeText, Mode=OneWay}"
                                                 Style="{StaticResource BodyStrongTextStyle}"
@@ -254,8 +269,8 @@
                 <ProgressRing
                     Width="14"
                     Height="14"
-                    IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
-                    Visibility="{x:Bind ViewModel.IsBusy, Converter={StaticResource BoolToVisibility}, Mode=OneWay}" />
+                    IsActive="{x:Bind ViewModel.ShowBusyIndicator, Mode=OneWay}"
+                    Visibility="{x:Bind ViewModel.ShowBusyIndicator, Converter={StaticResource BoolToVisibility}, Mode=OneWay}" />
 
                 <TextBlock
                     Grid.Column="1"

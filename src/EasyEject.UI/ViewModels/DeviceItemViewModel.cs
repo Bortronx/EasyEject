@@ -18,6 +18,7 @@ public sealed partial class DeviceItemViewModel : ObservableObject
 {
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(Title))]
+    [NotifyPropertyChangedFor(nameof(DriveLetterBadgeText))]
     [NotifyPropertyChangedFor(nameof(Subtitle))]
     [NotifyPropertyChangedFor(nameof(DetailText))]
     [NotifyPropertyChangedFor(nameof(CapacityText))]
@@ -56,7 +57,24 @@ public sealed partial class DeviceItemViewModel : ObservableObject
     /// <summary>
     /// Gets the primary display name.
     /// </summary>
-    public string Title => Device.FriendlyName ?? Device.Model ?? "Unknown device";
+    public string Title
+    {
+        get
+        {
+            string name = Device.FriendlyName ?? Device.Model ?? "Unknown device";
+            return Device.DriveLetters.Count > 0 ? $"{name} ({VolumeText})" : name;
+        }
+    }
+
+    /// <summary>
+    /// Gets the explicit drive-letter label shown in the device card.
+    /// </summary>
+    public string DriveLetterBadgeText => Device.DriveLetters.Count switch
+    {
+        0 => "No drive letter",
+        1 => $"Drive {VolumeText}",
+        _ => $"Drives {VolumeText}",
+    };
 
     /// <summary>
     /// Gets the secondary line: type and bus.

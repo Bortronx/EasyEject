@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using System.Text;
 using EasyEject.Win32.Interop;
 
@@ -76,19 +77,35 @@ public static class VolumeEnumerator
 
     private static List<string> GetLetters(string volumeGuid)
     {
-        var letters = new List<string>();
-        var volumeName = new StringBuilder(512);
+        string volumeName = volumeGuid.EndsWith('\\') ? volumeGuid : volumeGuid + "\\";
 
-        for (char drive = 'A'; drive <= 'Z'; drive++)
+        if (!NativeMethods.GetVolumePathNamesForVolumeNameW(volumeName, null, 0, out uint requiredLength))
         {
-            string mountPoint = $@"{drive}:\";
-            if (NativeMethods.GetVolumeNameForVolumeMountPoint(mountPoint, volumeName, (uint)volumeName.Capacity))
+            int error = Marshal.GetLastWin32Error();
+            if (error != Constants.ErrorMoreData && error != Constants.ErrorInsufficientBuffer)
             {
-                string volumePath = volumeName.ToString().TrimEnd('\\');
-                if (string.Equals(volumePath, volumeGuid, StringComparison.OrdinalIgnoreCase))
-                {
-                    letters.Add($@"{drive}:");
-                }
+                return new List<string>();
+            }
+        }
+
+        if (requiredLength == 0)
+        {
+            return new List<string>();
+        }
+
+        var buffer = new char[requiredLength];
+        if (!NativeMethods.GetVolumePathNamesForVolumeNameW(volumeName, buffer, requiredLength, out requiredLength))
+        {
+            return new List<string>();
+        }
+
+        var letters = new List<string>();
+        foreach (string path in new string(buffer).Split('\0', StringSplitOptions.RemoveEmptyEntries))
+        {
+            string trimmed = path.TrimEnd('\\');
+            if (trimmed.Length == 2 && trimmed[1] == ':')
+            {
+                letters.Add(trimmed);
             }
         }
 
