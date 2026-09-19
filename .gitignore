@@ -26,3 +26,6 @@ src/EasyEject.Package/obj/
 
 # Logs
 *.log
+
+# Generated release bundles
+artifacts/release-assets/

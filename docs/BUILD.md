@@ -62,6 +62,23 @@ Steps performed:
 
 Output: `src\EasyEject.Package\bin\EasyEject-x64.msix`.
 
+## Publish a GitHub release asset
+
+Set `GITHUB_TOKEN` to a token with permission to manage releases, then run:
+
+```powershell
+dotnet run --project .\scripts\PublishRelease\PublishRelease.csproj -- `
+  --repository Bortronx/EasyEject `
+  --tag v1.0.0 `
+  --release-name "EasyEject 1.0.0" `
+  --asset-path .\artifacts\release-assets\EasyEject-1.0.0-win-x64.zip `
+  --release-notes "Release notes here"
+```
+
+The tool creates the release if the tag does not already exist, removes any
+existing asset with the same file name, uploads the new file, and prints the
+release URL on success.
+
 ## Install the MSIX
 
 ```powershell
